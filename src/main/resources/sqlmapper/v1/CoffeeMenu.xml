@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sailing.v1.dao.MenuDao">
+    <!--    메뉴 조회    -->
+    <select id="doList" resultType="map">
+        select no, coffee, kind, price,
+        date_format(reg_day, '%Y.%m.%d') as reg_day,
+        date_format(mod_day, '%Y.%m.%d') as mod_day
+        from coffee_menu;
+    </select>
+
+    <!-- 검색에 의한 쿼리 -->
+    <select id="doSearch" resultType="map">
+        select no, coffee, kind, price,
+            date_format(reg_day, '%Y.%m.%d') as reg_day,
+            date_format(mod_day, '%Y.%m.%d') as mod_day
+        from coffee_menu
+        where 1=1
+        and reg_day >= date_format(#{strStartDate}, '%Y%m%d')
+        and reg_day &lt; date_add(date_format(#{strEndDate}, '%Y%m%d'), interval +1 day)
+        <if test="strCoffee != 'ALL'">
+            and coffee like concat(#{strCoffee}, '%')
+        </if>
+        <if test="strKind != 'ALL'">
+            and kind = #{strKind}
+        </if>
+    </select>
+
+    <insert id="doInsert">
+        INSERT INTO coffee_menu (coffee, kind, price)
+        VALUES(#{strCoffee},#{strKind},#{strPrice})
+    </insert>
+
+    <!--    One row    -->
+    <select id="doListOne" resultType="map">
+        select no, coffee, kind, price,
+        date_format(reg_day, '%Y.%m.%d') as reg_day,
+        date_format(mod_day, '%Y.%m.%d') as mod_day
+        from coffee_menu
+        where no = #{strNo}
+    </select>
+
+    <update id="doUpdate">
+        update coffee_menu
+        set
+            coffee = #{strCoffee},
+            kind = #{strKind},
+            price = #{strPrice}
+        where no = #{strNo}
+    </update>
+
+    <delete id="doDelete">
+        delete from coffee_menu where no = #{strNo}
+    </delete>
+</mapper>
